@@ -1,0 +1,180 @@
+:root {
+  --bg-dark: #1a1a1a;
+  --bg-navy: #0f172a;
+  --ui-white: #f2f2f2;
+  --ui-dim: #c4c4c4;
+  --accent-green: #4ade80;
+  --accent-blue: #60a5fa;
+  --accent-yellow: #facc15;
+  --accent-red: #ef4444;
+  --frame-outer: #f2f2f2;
+  --frame-inner: #1a1a1a;
+  --frame-shadow: #0a0a0a;
+  --panel-bg: #2a2a3e;
+  --panel-inner: #1e1e2e;
+  --font-pixel: "Press Start 2P", monospace;
+  --font-body: "VT323", "Cairo", sans-serif;
+  --font-arabic: "Cairo", "VT323", sans-serif;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --stage-max: 480px;
+  --border-chunk: 4px;
+  --btn-press: 3px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--bg-dark);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' shape-rendering='crispEdges'><rect x='4' y='6' width='3' height='3' fill='%230f172a'/><rect x='22' y='10' width='4' height='4' fill='%231d1d2b'/><rect x='34' y='18' width='3' height='3' fill='%230f172a'/><rect x='10' y='28' width='4' height='4' fill='%23151522'/><rect x='30' y='32' width='3' height='3' fill='%23151522'/><rect x='16' y='40' width='3' height='3' fill='%230f172a'/></svg>");
+  background-size: 48px 48px;
+  background-repeat: repeat;
+  color: var(--ui-white);
+  font-family: var(--font-arabic);
+  line-height: 1.4;
+  overflow-x: hidden;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  position: relative;
+}
+
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  image-rendering: pixelated;
+}
+
+body::before {
+  z-index: 0;
+  opacity: 0.25;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' shape-rendering='crispEdges'><rect x='6' y='8' width='2' height='2' fill='%23f2f2f2'/><rect x='22' y='14' width='1' height='1' fill='%2360a5fa'/><rect x='44' y='20' width='2' height='2' fill='%23facc15'/><rect x='12' y='34' width='1' height='1' fill='%234ade80'/><rect x='52' y='40' width='2' height='2' fill='%23f2f2f2'/><rect x='30' y='54' width='1' height='1' fill='%23f2f2f2'/></svg>");
+  background-size: 64px 64px;
+  animation: starDrift 90s steps(120) infinite;
+}
+
+body::after {
+  z-index: 0;
+  opacity: 0.18;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' shape-rendering='crispEdges'><rect x='10' y='12' width='3' height='3' fill='%2360a5fa'/><rect x='38' y='18' width='2' height='2' fill='%23facc15'/><rect x='62' y='30' width='3' height='3' fill='%23f2f2f2'/><rect x='18' y='54' width='2' height='2' fill='%234ade80'/><rect x='48' y='66' width='3' height='3' fill='%2360a5fa'/></svg>");
+  background-size: 80px 80px;
+  animation: starDrift 140s steps(140) infinite reverse;
+}
+
+#app {
+  position: relative;
+  z-index: 2;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md);
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
+  width: 100%;
+}
+
+#game-header {
+  width: 100%;
+  max-width: var(--stage-max);
+}
+
+#game-content {
+  width: 100%;
+  max-width: var(--stage-max);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--panel-inner);
+  border: var(--border-chunk) solid var(--frame-outer);
+  box-shadow:
+    var(--border-chunk) var(--border-chunk) 0 var(--frame-shadow),
+    inset 0 0 0 2px var(--frame-inner);
+  padding: var(--space-md);
+  overflow: hidden;
+}
+
+#game-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' shape-rendering='crispEdges'><rect x='2' y='2' width='2' height='2' fill='%232e2e44'/><rect x='12' y='6' width='2' height='2' fill='%232c2c40'/><rect x='6' y='14' width='2' height='2' fill='%2327273a'/></svg>");
+  background-size: 20px 20px;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+#game-content > * {
+  position: relative;
+  z-index: 1;
+}
+
+#confetti-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+.pixel-dissolve {
+  position: fixed;
+  inset: 0;
+  z-index: 11;
+  pointer-events: none;
+  background-color: var(--bg-dark);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' shape-rendering='crispEdges'><rect x='1' y='1' width='2' height='2' fill='%230a0a0a'/><rect x='6' y='2' width='2' height='2' fill='%2314141f'/><rect x='3' y='7' width='2' height='2' fill='%230a0a0a'/><rect x='9' y='6' width='2' height='2' fill='%2314141f'/><rect x='5' y='9' width='2' height='2' fill='%230a0a0a'/></svg>");
+  background-size: 12px 12px;
+  image-rendering: pixelated;
+  opacity: 0;
+}
+
+.pixel-dissolve--in {
+  animation: pixelDissolveIn 0.18s steps(6) forwards;
+}
+
+.pixel-dissolve--out {
+  animation: pixelDissolveOut 0.22s steps(6) forwards;
+}
+
+#crt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'><rect y='2' width='4' height='1' fill='%23000000'/></svg>");
+  background-size: 4px 4px;
+  background-repeat: repeat;
+  opacity: 0.35;
+  animation: crtFlicker 6s steps(2) infinite;
+}
+
+.screen {
+  width: 100%;
+  max-width: var(--stage-max);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  animation: screenIn 0.2s steps(4) forwards;
+}
+
+.screen--exit {
+  animation: screenOut 0.2s steps(4) forwards;
+}

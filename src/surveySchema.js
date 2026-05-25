@@ -1,0 +1,111 @@
+export const COPY = {
+  welcomeTagline: 'لعبتَ آلاف الساعات.. فماذا علمتك الحياة الرقمية؟ 🎮',
+  startButton: 'ابدأ التحدي 🚀',
+  pressStart: 'PRESS START',
+  victory: 'تم تسجيل إجاباتك بنجاح! 🏆',
+  victoryBanner: 'VICTORY',
+  continueButton: 'CONTINUE',
+  nextButton: 'التالي ▶',
+  confirmButton: 'تأكيد ✓',
+  validationError: '! اختر إجابة للمتابعة',
+  saving: 'جاري الحفظ... 💾',
+  demoBanner: 'وضع تجريبي — أضف VITE_SHEETS_URL في .env',
+};
+
+export const QUESTIONS = [
+  {
+    id: 'hours_week',
+    type: 'single',
+    required: true,
+    text: 'كم ساعة تقضي أسبوعياً في العالم الرقمي؟ 🕹️',
+    options: ['أقل من 5', '5–15', '15–30', 'أكثر من 30'],
+  },
+  {
+    id: 'favorite_genre',
+    type: 'single',
+    required: true,
+    text: 'ما نوع التجارب الرقمية التي تجذبك أكثر؟ 🎯',
+    options: [
+      'أكشن ⚔️',
+      'تقمص أدوار 🗡️',
+      'استراتيجية ♟️',
+      'محاكاة/بناء 🏗️',
+      'رياضة/سباق 🏎️',
+      'أخرى ✨',
+    ],
+  },
+  {
+    id: 'play_style',
+    type: 'single',
+    required: true,
+    text: 'كيف تلعب عادةً؟ 👥',
+    options: [
+      'مع فريق دائماً 🤝',
+      'منفرد غالباً 🧍',
+      'مزيج ⚖️',
+      'لا ألعب أونلاين 📴',
+    ],
+  },
+  {
+    id: 'life_lesson',
+    type: 'single',
+    required: true,
+    text: 'أهم «مهارة» نقلتها الألعاب إلى حياتك الحقيقية؟ 💡',
+    options: ['الصبر', 'التخطيط', 'التعاون', 'إدارة الوقت', 'لا شيء محدد', 'أخرى'],
+  },
+  {
+    id: 'mood_effect',
+    type: 'single',
+    required: true,
+    text: 'تأثير اللعب على مزاجك بعد جلسة طويلة؟ 😊',
+    options: [
+      'أهدأ وأفضل',
+      'بدون تغيير',
+      'أحياناً أتعب نفسياً',
+      'يعتمد على اللعبة',
+    ],
+  },
+  {
+    id: 'creation',
+    type: 'single',
+    required: true,
+    text: 'هل جرّبت صناعة محتوى أو ألعاب؟ 💻',
+    options: [
+      'أطور/أبرمج ألعاباً',
+      'أصنع محتوى (ستريم/يوتيوب)',
+      'أفكر فقط',
+      'لا',
+    ],
+  },
+  {
+    id: 'platform',
+    type: 'multi',
+    required: true,
+    text: 'منصاتك الأساسية؟ (اختر كل ما ينطبق) 🖥️',
+    options: ['PC', 'Console', 'Mobile', 'VR/أخرى'],
+  },
+  {
+    id: 'esports',
+    type: 'single',
+    required: true,
+    text: 'علاقتك بالمشاهدة أو الرياضات الإلكترونية؟ 📺',
+    options: ['أتابع بانتظام', 'أحياناً', 'نادراً', 'لا أتابع'],
+  },
+  {
+    id: 'spend_month',
+    type: 'single',
+    required: true,
+    text: 'إنفاقك الشهري على ألعاب/اشتراكات؟ 💰',
+    options: ['0', 'قليل', 'متوسط', 'مرتفع'],
+  },
+  {
+    id: 'advice',
+    type: 'text',
+    required: false,
+    text: 'نصيحة لمن يبدأ رحلته في العالم الرقمي اليوم؟ 🚀',
+    maxLength: 300,
+    placeholder: 'اكتب نصيحتك هنا...',
+  },
+];
+
+export const TOTAL_QUESTS = QUESTIONS.length;

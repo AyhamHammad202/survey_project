@@ -1,0 +1,205 @@
+@keyframes screenIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes screenOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@keyframes pixelDissolveIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pixelDissolveOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.85;
+  }
+  94% {
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.9;
+  }
+}
+
+@keyframes cursorBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes hpPulse {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.15);
+  }
+}
+
+@keyframes starDrift {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -240px 180px;
+  }
+}
+
+@keyframes focusPulse {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 0 2px var(--accent-blue),
+      2px 2px 0 var(--frame-shadow);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 2px var(--accent-yellow),
+      2px 2px 0 var(--frame-shadow);
+  }
+}
+
+@keyframes cursorNudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes avatarBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes panelGlow {
+  0%,
+  100% {
+    box-shadow:
+      var(--border-chunk) var(--border-chunk) 0 var(--frame-shadow),
+      inset 0 0 0 2px var(--frame-inner);
+  }
+  50% {
+    box-shadow:
+      var(--border-chunk) var(--border-chunk) 0 var(--frame-shadow),
+      inset 0 0 0 2px var(--accent-blue);
+  }
+}
+
+@keyframes crtFlicker {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.45;
+  }
+  70% {
+    opacity: 0.28;
+  }
+}
+
+@keyframes titleFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pressFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes gemPulse {
+  0%,
+  100% {
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+  50% {
+    transform: translateY(-2px);
+    filter: brightness(1.2);
+  }
+}
