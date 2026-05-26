@@ -267,6 +267,16 @@
   margin-bottom: var(--space-sm);
 }
 
+.scene-hint {
+  font-family: var(--font-pixel);
+  font-size: clamp(8px, 2.5vw, 10px);
+  color: var(--accent-green);
+  text-align: center;
+  letter-spacing: 1px;
+  padding-top: var(--space-sm);
+  animation: blink 1s steps(2) infinite;
+}
+
 /* Menu options */
 .menu-options {
   list-style: none;

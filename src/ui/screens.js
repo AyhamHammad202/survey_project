@@ -115,6 +115,7 @@ export function renderQuest(app, { onNext, onComplete }) {
   const token = ++questRenderToken;
   const state = getState();
   const question = getCurrentQuestion();
+  const hasMenu = Array.isArray(question.options) && question.options.length > 0;
 
   const screen = document.createElement('div');
   screen.className = 'screen quest-screen';
@@ -146,7 +147,7 @@ export function renderQuest(app, { onNext, onComplete }) {
     refreshBody();
   });
 
-  if (question.type !== 'text') {
+  if (hasMenu) {
     unbindKeyboard = bindMenuKeyboard(question, {
       onFocusChange: () => {
         if (token !== questRenderToken) return;
@@ -168,7 +169,11 @@ export function renderQuest(app, { onNext, onComplete }) {
   actions.className = 'actions';
 
   const isLast = isLastQuest();
-  const btnLabel = isLast ? COPY.confirmButton : COPY.nextButton;
+  const defaultLabel = isLast ? COPY.confirmButton : COPY.nextButton;
+  const btnLabel =
+    question.type === 'scene' && question.actionLabel
+      ? question.actionLabel
+      : defaultLabel;
   const nextBtn = createPixelButton(btnLabel, { variant: isLast ? 'yellow' : '' });
 
   const handleNext = async () => {

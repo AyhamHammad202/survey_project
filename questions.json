@@ -1,0 +1,327 @@
+{
+  "survey_title": {
+    "ar": "لعبتَ آلاف الساعات.. فماذا علمتك الحياة الرقمية؟ 🎮",
+    "en": "Thousands of Hours Played… What Did Gaming Teach You About Life?"
+  },
+
+  "research_intent": {
+    "ar": "تحليل العلاقة بين سلوك اللاعبين داخل الألعاب وأنماطهم النفسية في الحياة الواقعية",
+    "en": "Analyzing the relationship between in-game behavior patterns and real-life psychological traits"
+  },
+
+  "design_system": {
+    "style": "pixel_rpg_ui",
+    "concept": "each question = game scene / interaction event",
+    "ui_rules": [
+      "no form-like layout",
+      "dialogue box or RPG menu per question",
+      "animated transitions like scene changes",
+      "cursor selection (▶)",
+      "sound optional (menu click / confirm)",
+      "progress shown as XP bar or quest progress"
+    ]
+  },
+
+  "questions": [
+    {
+      "id": "intro_cutscene",
+      "type": "intro_scene",
+      "presentation": {
+        "style": "rpg_cutscene",
+        "ui": "full_screen_story_intro",
+        "text": {
+          "ar": "أنت الآن داخل عالم… حيث كل قرار يشبه لعبة، وكل تجربة تُحسب كنقطة خبرة 🎮",
+          "en": "You are entering a world where every decision feels like a game, and every experience is XP 🎮"
+        },
+        "action": "PRESS START"
+      },
+      "goal": "engagement priming / immersion induction"
+    },
+
+    {
+      "id": "q1_life_mode",
+      "type": "single_choice",
+      "presentation": {
+        "style": "difficulty_selection_menu",
+        "ui": "game_start_screen"
+      },
+      "question": {
+        "ar": "اختر مستوى صعوبة حياتك الحالية 🎚️",
+        "en": "Select your current life difficulty level"
+      },
+      "goal": "perceived stress index",
+      "options": [
+        { "label": { "ar": "🟢 سهل", "en": "Easy Mode" }, "value": "easy" },
+        {
+          "label": { "ar": "🟡 متوسط", "en": "Normal Mode" },
+          "value": "normal"
+        },
+        { "label": { "ar": "🔴 صعب", "en": "Hard Mode" }, "value": "hard" },
+        {
+          "label": { "ar": "💀 زعيم نهائي", "en": "Boss Fight Life" },
+          "value": "boss"
+        }
+      ]
+    },
+
+    {
+      "id": "q2_play_archetype",
+      "type": "single_choice",
+      "presentation": {
+        "style": "character_class_selection",
+        "ui": "rpg_class_menu"
+      },
+      "question": {
+        "ar": "أي شخصية لاعب تمثلك؟ 🧠",
+        "en": "What is your player archetype?"
+      },
+      "goal": "psychological classification (player archetype)",
+      "options": [
+        {
+          "label": { "ar": "⚔️ محارب تنافسي", "en": "Competitive Warrior" },
+          "value": "warrior"
+        },
+        {
+          "label": { "ar": "🎯 مخطط استراتيجي", "en": "Strategist" },
+          "value": "strategist"
+        },
+        {
+          "label": { "ar": "📖 مستكشف قصصي", "en": "Story Explorer" },
+          "value": "explorer"
+        },
+        {
+          "label": { "ar": "🧱 بنّاء مبدع", "en": "Creative Builder" },
+          "value": "builder"
+        }
+      ]
+    },
+
+    {
+      "id": "q3_failure_event",
+      "type": "event_choice",
+      "presentation": {
+        "style": "battle_defeat_screen",
+        "ui": "failed_mission_popup"
+      },
+      "question": {
+        "ar": "بعد خسارة صعبة في لعبة تنافسية… ماذا يحدث فوراً؟ 💥",
+        "en": "After a hard loss in a competitive game… what happens immediately?"
+      },
+      "goal": "frustration response pattern",
+      "options": [
+        {
+          "label": { "ar": "🚪 أخرج فوراً", "en": "I quit immediately" },
+          "value": "quit"
+        },
+        {
+          "label": {
+            "ar": "🔥 أعيد المحاولة فوراً",
+            "en": "Retry immediately"
+          },
+          "value": "retry"
+        },
+        {
+          "label": { "ar": "🔍 أراجع وأحلل الخطأ", "en": "Analyze mistakes" },
+          "value": "analyze"
+        }
+      ]
+    },
+
+    {
+      "id": "q4_learning_from_failure",
+      "type": "likert_scene",
+      "presentation": {
+        "style": "xp_learning_scroll",
+        "ui": "skill_tree_unlock_screen"
+      },
+      "question": {
+        "ar": "الخسارة في الألعاب علمتني أن الفشل في الحياة = خبرة إضافية 🎯",
+        "en": "Failure in games taught me that failure in life equals extra experience"
+      },
+      "goal": "growth mindset scale",
+      "scale": "likert_5"
+    },
+
+    {
+      "id": "q5_time_management",
+      "type": "likert_scene",
+      "presentation": {
+        "style": "resource_management_ui",
+        "ui": "inventory_and_time_bar"
+      },
+      "question": {
+        "ar": "إدارة الموارد في الألعاب حسّنت إدارة وقتي وقراراتي المالية 💰",
+        "en": "Resource management in games improved my time and financial decisions"
+      },
+      "goal": "self-regulation transfer",
+      "scale": "likert_5"
+    },
+
+    {
+      "id": "q6_team_role",
+      "type": "multi_select_mission",
+      "presentation": {
+        "style": "team_composition_screen",
+        "ui": "party_selection"
+      },
+      "question": {
+        "ar": "اللعب الجماعي تحت الضغط طور عندي شنو؟ 👥 (اختر مهمتين)",
+        "en": "Multiplayer gaming improved me in (choose up to 2)"
+      },
+      "goal": "social skill extraction",
+      "max_select": 2,
+      "options": [
+        {
+          "label": { "ar": "🗣️ تواصل سريع", "en": "Fast communication" },
+          "value": "communication"
+        },
+        {
+          "label": { "ar": "👑 قيادة فريق", "en": "Leadership" },
+          "value": "leadership"
+        },
+        {
+          "label": { "ar": "🧘 ضبط أعصاب", "en": "Emotional control" },
+          "value": "emotion"
+        },
+        { "label": { "ar": "❌ لا شيء", "en": "Nothing" }, "value": "none" }
+      ]
+    },
+
+    {
+      "id": "q7_escape_behavior_meter",
+      "type": "frequency_slider",
+      "presentation": {
+        "style": "danger_meter_ui",
+        "ui": "escape_level_bar"
+      },
+      "question": {
+        "ar": "كم مرة تهرب للألعاب بدل مواجهة الواقع؟ 🧠",
+        "en": "How often do you escape into games instead of real-life problems?"
+      },
+      "goal": "avoidance coping index",
+      "scale": ["Always", "Often", "Sometimes", "Rarely", "Never"]
+    },
+
+    {
+      "id": "q8_risk_reward_behavior",
+      "type": "scenario_choice",
+      "presentation": {
+        "style": "lootbox_decision_scene",
+        "ui": "risk_reward_event"
+      },
+      "question": {
+        "ar": "إذا عندك خيار: مكافأة مضمونة أو مخاطرة للحصول على مكافأة أكبر؟ 🎲",
+        "en": "Choose: safe reward or risky bigger reward?"
+      },
+      "goal": "risk-taking behavior",
+      "options": [
+        {
+          "label": { "ar": "مكافأة مضمونة", "en": "Safe reward" },
+          "value": "safe"
+        },
+        { "label": { "ar": "مخاطرة", "en": "Risky reward" }, "value": "risk" }
+      ]
+    },
+
+    {
+      "id": "q9_focus_under_pressure",
+      "type": "reaction_test_question",
+      "presentation": {
+        "style": "timed_mission_ui",
+        "ui": "stress_response_scene"
+      },
+      "question": {
+        "ar": "كيف يكون أداؤك تحت الضغط داخل الألعاب؟ ⏱️",
+        "en": "How do you perform under pressure in games?"
+      },
+      "goal": "pressure performance self-assessment",
+      "options": [
+        { "label": { "ar": "أتحسن", "en": "I improve" }, "value": "better" },
+        {
+          "label": { "ar": "يبقى طبيعي", "en": "Same performance" },
+          "value": "same"
+        },
+        { "label": { "ar": "يسوء", "en": "I perform worse" }, "value": "worse" }
+      ]
+    },
+
+    {
+      "id": "q10_social_transfer",
+      "type": "likert_scene",
+      "presentation": {
+        "style": "real_world_skill_unlock",
+        "ui": "achievement_unlock"
+      },
+      "question": {
+        "ar": "الألعاب حسّنت تواصلي في الحياة الواقعية 👥",
+        "en": "Games improved my real-life communication"
+      },
+      "goal": "social transfer effect",
+      "scale": "likert_5"
+    },
+
+    {
+      "id": "q11_identity_shift",
+      "type": "reflective_choice",
+      "presentation": {
+        "style": "mirror_scene_ui",
+        "ui": "character_self_reflection"
+      },
+      "question": {
+        "ar": "هل تشعر أن شخصيتك داخل اللعبة تؤثر على شخصيتك خارجها؟ 🎭",
+        "en": "Do you feel your in-game personality affects your real-life personality?"
+      },
+      "goal": "identity blending effect",
+      "options": [
+        { "label": { "ar": "نعم كثيراً", "en": "Yes a lot" }, "value": "high" },
+        { "label": { "ar": "أحياناً", "en": "Sometimes" }, "value": "medium" },
+        { "label": { "ar": "لا", "en": "No" }, "value": "low" }
+      ]
+    },
+
+    {
+      "id": "q12_final_feedback",
+      "type": "open_world_text",
+      "presentation": {
+        "style": "end_game_dialogue",
+        "ui": "npc_conversation_box"
+      },
+      "question": {
+        "ar": "قبل أن تغادر العالم… صف تجربتك مع هذا الاستبيان 🎮✨",
+        "en": "Before you leave this world… describe your experience with this survey"
+      },
+      "goal": "qualitative UX + emotional response analysis",
+      "optional": true
+    }
+  ],
+
+  "success_screen": {
+    "style": "rpg_victory_screen",
+    "text": {
+      "ar": "🏆 لقد أكملت الرحلة بنجاح",
+      "en": "🏆 You have completed the journey"
+    },
+    "message": {
+      "ar": "تم تسجيل بياناتك كـ XP ضمن دراسة سلوك اللاعبين",
+      "en": "Your responses have been saved as XP in player behavior research"
+    }
+  },
+
+  "statistical_intent": {
+    "analysis_methods": [
+      "factor_analysis (psychological traits)",
+      "cluster_analysis (player archetypes)",
+      "correlation_analysis (gaming vs life behavior)",
+      "regression_modeling (predict behavioral transfer)",
+      "latent_trait modeling"
+    ],
+    "target_variables": [
+      "resilience",
+      "risk_taking",
+      "avoidance behavior",
+      "social skills",
+      "growth mindset",
+      "time management perception"
+    ]
+  }
+}

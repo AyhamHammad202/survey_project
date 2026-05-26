@@ -73,7 +73,7 @@ export function validateCurrentQuestion() {
 
   if (!q.required) return true;
 
-  if (q.type === 'text') return true;
+  if (q.type === 'text' || q.type === 'scene') return true;
 
   if (q.type === 'multi') {
     return Array.isArray(answer) && answer.length > 0;
@@ -87,7 +87,7 @@ export function validateAllRequired() {
     if (!q.required) return true;
     const answer = state.answers[q.id];
     if (q.type === 'multi') return Array.isArray(answer) && answer.length > 0;
-    if (q.type === 'text') return true;
+    if (q.type === 'text' || q.type === 'scene') return true;
     return answer !== undefined && answer !== '';
   });
 }

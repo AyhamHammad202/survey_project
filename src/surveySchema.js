@@ -1,9 +1,121 @@
+import surveyData from '../questions.json';
+
+const DEFAULT_LIKERT = [
+  { label: 'أوافق بشدة', value: 'strongly_agree' },
+  { label: 'أوافق', value: 'agree' },
+  { label: 'محايد', value: 'neutral' },
+  { label: 'لا أوافق', value: 'disagree' },
+  { label: 'لا أوافق بشدة', value: 'strongly_disagree' },
+];
+
+const SCALE_TRANSLATIONS = {
+  Always: 'دائماً',
+  Often: 'غالباً',
+  Sometimes: 'أحياناً',
+  Rarely: 'نادراً',
+  Never: 'أبداً',
+};
+
+function getArabicText(value) {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    return value.ar || value.en || '';
+  }
+  return String(value);
+}
+
+function normalizeOption(option) {
+  if (typeof option === 'string') {
+    const label = SCALE_TRANSLATIONS[option] || option;
+    return { label, value: option };
+  }
+  if (option && typeof option === 'object') {
+    const label = getArabicText(option.label ?? option);
+    const value = option.value ?? label;
+    return { label, value };
+  }
+  const fallback = String(option);
+  return { label: fallback, value: fallback };
+}
+
+function normalizeOptions(options) {
+  if (!Array.isArray(options)) return [];
+  return options.map(normalizeOption);
+}
+
+function normalizeScale(scale) {
+  if (Array.isArray(scale)) return normalizeOptions(scale);
+  if (scale === 'likert_5') return DEFAULT_LIKERT;
+  return [];
+}
+
+function normalizeQuestion(raw) {
+  const required = raw.optional !== true;
+  const questionText = getArabicText(raw.question || raw.presentation?.text);
+
+  switch (raw.type) {
+    case 'intro_scene':
+      return {
+        id: raw.id,
+        type: 'scene',
+        required: false,
+        text: getArabicText(raw.presentation?.text || raw.question),
+        actionLabel: raw.presentation?.action || '',
+      };
+    case 'open_world_text':
+      return {
+        id: raw.id,
+        type: 'text',
+        required,
+        text: questionText,
+        maxLength: raw.max_length || 300,
+        placeholder: 'اكتب إجابتك هنا...',
+      };
+    case 'multi_select_mission':
+      return {
+        id: raw.id,
+        type: 'multi',
+        required,
+        text: questionText,
+        options: normalizeOptions(raw.options),
+        maxSelect: raw.max_select || undefined,
+      };
+    case 'likert_scene':
+    case 'frequency_slider':
+      return {
+        id: raw.id,
+        type: 'single',
+        required,
+        text: questionText,
+        options: normalizeScale(raw.scale),
+      };
+    case 'single_choice':
+    case 'event_choice':
+    case 'scenario_choice':
+    case 'reaction_test_question':
+    case 'reflective_choice':
+    default:
+      return {
+        id: raw.id,
+        type: 'single',
+        required,
+        text: questionText,
+        options: normalizeOptions(raw.options),
+      };
+  }
+}
+
+const introScene = surveyData.questions?.find((q) => q.type === 'intro_scene');
+const success = surveyData.success_screen || {};
+
 export const COPY = {
-  welcomeTagline: 'لعبتَ آلاف الساعات.. فماذا علمتك الحياة الرقمية؟ 🎮',
+  welcomeTagline: getArabicText(surveyData.survey_title) ||
+    'لعبتَ آلاف الساعات.. فماذا علمتك الحياة الرقمية؟ 🎮',
   startButton: 'ابدأ التحدي 🚀',
-  pressStart: 'PRESS START',
-  victory: 'تم تسجيل إجاباتك بنجاح! 🏆',
-  victoryBanner: 'VICTORY',
+  pressStart: introScene?.presentation?.action || 'PRESS START',
+  victory: getArabicText(success.message) || 'تم تسجيل إجاباتك بنجاح! 🏆',
+  victoryBanner: getArabicText(success.text) || 'VICTORY',
   continueButton: 'CONTINUE',
   nextButton: 'التالي ▶',
   confirmButton: 'تأكيد ✓',
@@ -12,100 +124,8 @@ export const COPY = {
   demoBanner: 'وضع تجريبي — أضف VITE_SHEETS_URL في .env',
 };
 
-export const QUESTIONS = [
-  {
-    id: 'hours_week',
-    type: 'single',
-    required: true,
-    text: 'كم ساعة تقضي أسبوعياً في العالم الرقمي؟ 🕹️',
-    options: ['أقل من 5', '5–15', '15–30', 'أكثر من 30'],
-  },
-  {
-    id: 'favorite_genre',
-    type: 'single',
-    required: true,
-    text: 'ما نوع التجارب الرقمية التي تجذبك أكثر؟ 🎯',
-    options: [
-      'أكشن ⚔️',
-      'تقمص أدوار 🗡️',
-      'استراتيجية ♟️',
-      'محاكاة/بناء 🏗️',
-      'رياضة/سباق 🏎️',
-      'أخرى ✨',
-    ],
-  },
-  {
-    id: 'play_style',
-    type: 'single',
-    required: true,
-    text: 'كيف تلعب عادةً؟ 👥',
-    options: [
-      'مع فريق دائماً 🤝',
-      'منفرد غالباً 🧍',
-      'مزيج ⚖️',
-      'لا ألعب أونلاين 📴',
-    ],
-  },
-  {
-    id: 'life_lesson',
-    type: 'single',
-    required: true,
-    text: 'أهم «مهارة» نقلتها الألعاب إلى حياتك الحقيقية؟ 💡',
-    options: ['الصبر', 'التخطيط', 'التعاون', 'إدارة الوقت', 'لا شيء محدد', 'أخرى'],
-  },
-  {
-    id: 'mood_effect',
-    type: 'single',
-    required: true,
-    text: 'تأثير اللعب على مزاجك بعد جلسة طويلة؟ 😊',
-    options: [
-      'أهدأ وأفضل',
-      'بدون تغيير',
-      'أحياناً أتعب نفسياً',
-      'يعتمد على اللعبة',
-    ],
-  },
-  {
-    id: 'creation',
-    type: 'single',
-    required: true,
-    text: 'هل جرّبت صناعة محتوى أو ألعاب؟ 💻',
-    options: [
-      'أطور/أبرمج ألعاباً',
-      'أصنع محتوى (ستريم/يوتيوب)',
-      'أفكر فقط',
-      'لا',
-    ],
-  },
-  {
-    id: 'platform',
-    type: 'multi',
-    required: true,
-    text: 'منصاتك الأساسية؟ (اختر كل ما ينطبق) 🖥️',
-    options: ['PC', 'Console', 'Mobile', 'VR/أخرى'],
-  },
-  {
-    id: 'esports',
-    type: 'single',
-    required: true,
-    text: 'علاقتك بالمشاهدة أو الرياضات الإلكترونية؟ 📺',
-    options: ['أتابع بانتظام', 'أحياناً', 'نادراً', 'لا أتابع'],
-  },
-  {
-    id: 'spend_month',
-    type: 'single',
-    required: true,
-    text: 'إنفاقك الشهري على ألعاب/اشتراكات؟ 💰',
-    options: ['0', 'قليل', 'متوسط', 'مرتفع'],
-  },
-  {
-    id: 'advice',
-    type: 'text',
-    required: false,
-    text: 'نصيحة لمن يبدأ رحلته في العالم الرقمي اليوم؟ 🚀',
-    maxLength: 300,
-    placeholder: 'اكتب نصيحتك هنا...',
-  },
-];
+export const QUESTIONS = (surveyData.questions || [])
+  .map(normalizeQuestion)
+  .filter((q) => q?.id && q?.text);
 
 export const TOTAL_QUESTS = QUESTIONS.length;

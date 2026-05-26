@@ -1,10 +1,37 @@
 import { playCursorMove, playMenuClick } from '../audio.js';
 import { getState, setAnswer, getAnswer, setState } from '../state.js';
 
+function getOptionLabel(option) {
+  if (typeof option === 'string') return option;
+  if (option && typeof option === 'object') {
+    return option.label ?? option.value ?? '';
+  }
+  return String(option ?? '');
+}
+
+function getOptionValue(option) {
+  if (typeof option === 'string') return option;
+  if (option && typeof option === 'object') {
+    return option.value ?? option.label ?? '';
+  }
+  return String(option ?? '');
+}
+
 export function renderMenuOptions(question, bodyEl, onChange) {
   bodyEl.innerHTML = '';
   const { menuFocus } = getState();
   const answer = getAnswer(question.id);
+
+  if (question.type === 'scene') {
+    if (question.actionLabel) {
+      const hint = document.createElement('div');
+      hint.className = 'scene-hint';
+      hint.textContent = question.actionLabel;
+      hint.dir = 'ltr';
+      bodyEl.appendChild(hint);
+    }
+    return { type: 'scene' };
+  }
 
   if (question.type === 'text') {
     const textarea = document.createElement('textarea');
@@ -44,11 +71,12 @@ export function renderMenuOptions(question, bodyEl, onChange) {
     li.setAttribute('role', question.type === 'multi' ? 'checkbox' : 'radio');
     li.tabIndex = -1;
 
+    const value = getOptionValue(opt);
     const isFocused = idx === menuFocus;
     const isSelected =
       question.type === 'multi'
-        ? Array.isArray(answer) && answer.includes(opt)
-        : answer === opt;
+        ? Array.isArray(answer) && answer.includes(value)
+        : answer === value;
 
     if (isFocused) li.classList.add('menu-option--focused');
     if (isSelected) li.classList.add('menu-option--selected');
@@ -63,7 +91,7 @@ export function renderMenuOptions(question, bodyEl, onChange) {
 
     const label = document.createElement('span');
     label.className = 'menu-option__label';
-    label.textContent = opt;
+    label.textContent = getOptionLabel(opt);
 
     li.appendChild(question.type === 'multi' ? check : cursor);
     if (question.type === 'multi') li.appendChild(cursor);
@@ -84,14 +112,19 @@ export function renderMenuOptions(question, bodyEl, onChange) {
 }
 
 function selectOption(question, opt, onChange) {
+  const value = getOptionValue(opt);
   if (question.type === 'multi') {
     const current = getAnswer(question.id) || [];
-    const next = current.includes(opt)
-      ? current.filter((o) => o !== opt)
-      : [...current, opt];
-    setAnswer(question.id, next);
+    if (current.includes(value)) {
+      setAnswer(question.id, current.filter((o) => o !== value));
+      onChange?.();
+      return;
+    }
+    const limit = question.maxSelect || 0;
+    if (limit && current.length >= limit) return;
+    setAnswer(question.id, [...current, value]);
   } else {
-    setAnswer(question.id, opt);
+    setAnswer(question.id, value);
   }
   onChange?.();
 }
@@ -101,11 +134,12 @@ function refreshMenu(list, question) {
   const answer = getAnswer(question.id);
   list.querySelectorAll('.menu-option').forEach((li, idx) => {
     const opt = question.options[idx];
+    const value = getOptionValue(opt);
     const isFocused = idx === menuFocus;
     const isSelected =
       question.type === 'multi'
-        ? Array.isArray(answer) && answer.includes(opt)
-        : answer === opt;
+        ? Array.isArray(answer) && answer.includes(value)
+        : answer === value;
 
     li.classList.toggle('menu-option--focused', isFocused);
     li.classList.toggle('menu-option--selected', isSelected);
