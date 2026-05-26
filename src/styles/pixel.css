@@ -99,7 +99,9 @@
   font-size: clamp(14px, 4.5vw, 22px);
   color: var(--accent-yellow);
   line-height: 1.8;
-  animation: flicker 4s infinite, titleFloat 6s steps(3) infinite;
+  animation:
+    flicker 4s infinite,
+    titleFloat 6s steps(3) infinite;
   text-shadow: 4px 4px 0 var(--frame-shadow);
   background: var(--panel-bg);
   border: var(--border-chunk) solid var(--frame-outer);
@@ -130,7 +132,9 @@
   font-family: var(--font-pixel);
   font-size: clamp(8px, 2.5vw, 10px);
   color: var(--accent-green);
-  animation: blink 1s steps(2) infinite, pressFloat 2.8s steps(2) infinite;
+  animation:
+    blink 1s steps(2) infinite,
+    pressFloat 2.8s steps(2) infinite;
   letter-spacing: 1px;
   text-shadow: 2px 2px 0 var(--frame-shadow);
 }

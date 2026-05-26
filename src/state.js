@@ -1,11 +1,11 @@
-import { QUESTIONS, TOTAL_QUESTS } from './surveySchema.js';
+import { QUESTIONS, TOTAL_QUESTS } from "./surveySchema.js";
 
-const STORAGE_KEY = 'pixel-survey-answers';
-const SOUND_KEY = 'pixel-survey-sound';
+const STORAGE_KEY = "pixel-survey-answers";
+const SOUND_KEY = "pixel-survey-sound";
 
 export function loadSoundPreference() {
   const stored = localStorage.getItem(SOUND_KEY);
-  return stored === null ? true : stored === 'true';
+  return stored === null ? true : stored === "true";
 }
 
 export function saveSoundPreference(on) {
@@ -14,7 +14,7 @@ export function saveSoundPreference(on) {
 
 export function createInitialState() {
   return {
-    screen: 'welcome',
+    screen: "welcome",
     questIndex: 0,
     answers: {},
     soundOn: loadSoundPreference(),
@@ -73,32 +73,37 @@ export function validateCurrentQuestion() {
 
   if (!q.required) return true;
 
-  if (q.type === 'text' || q.type === 'scene') return true;
+  if (q.type === "text" || q.type === "scene") return true;
 
-  if (q.type === 'multi') {
+  if (q.type === "multi") {
     return Array.isArray(answer) && answer.length > 0;
   }
 
-  return answer !== undefined && answer !== null && answer !== '';
+  return answer !== undefined && answer !== null && answer !== "";
 }
 
 export function validateAllRequired() {
   return QUESTIONS.every((q) => {
     if (!q.required) return true;
     const answer = state.answers[q.id];
-    if (q.type === 'multi') return Array.isArray(answer) && answer.length > 0;
-    if (q.type === 'text' || q.type === 'scene') return true;
-    return answer !== undefined && answer !== '';
+    if (q.type === "multi") return Array.isArray(answer) && answer.length > 0;
+    if (q.type === "text" || q.type === "scene") return true;
+    return answer !== undefined && answer !== "";
   });
 }
 
 export function goToWelcome() {
-  setState({ screen: 'welcome', questIndex: 0, menuFocus: 0, typewriterDone: false });
+  setState({
+    screen: "welcome",
+    questIndex: 0,
+    menuFocus: 0,
+    typewriterDone: false,
+  });
 }
 
 export function startQuest() {
   setState({
-    screen: 'quest',
+    screen: "quest",
     questIndex: 0,
     menuFocus: 0,
     typewriterDone: false,
@@ -107,7 +112,7 @@ export function startQuest() {
 }
 
 export function goToVictory() {
-  setState({ screen: 'victory', isSubmitting: false, submitError: null });
+  setState({ screen: "victory", isSubmitting: false, submitError: null });
 }
 
 export function nextQuest() {
@@ -131,6 +136,6 @@ export function backupAnswersLocally() {
     JSON.stringify({
       timestamp: new Date().toISOString(),
       answers: state.answers,
-    })
+    }),
   );
 }

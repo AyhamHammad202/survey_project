@@ -1,55 +1,55 @@
-import { playCursorMove, playMenuClick } from '../audio.js';
-import { getState, setAnswer, getAnswer, setState } from '../state.js';
+import { playCursorMove, playMenuClick } from "../audio.js";
+import { getState, setAnswer, getAnswer, setState } from "../state.js";
 
 function getOptionLabel(option) {
-  if (typeof option === 'string') return option;
-  if (option && typeof option === 'object') {
-    return option.label ?? option.value ?? '';
+  if (typeof option === "string") return option;
+  if (option && typeof option === "object") {
+    return option.label ?? option.value ?? "";
   }
-  return String(option ?? '');
+  return String(option ?? "");
 }
 
 function getOptionValue(option) {
-  if (typeof option === 'string') return option;
-  if (option && typeof option === 'object') {
-    return option.value ?? option.label ?? '';
+  if (typeof option === "string") return option;
+  if (option && typeof option === "object") {
+    return option.value ?? option.label ?? "";
   }
-  return String(option ?? '');
+  return String(option ?? "");
 }
 
 export function renderMenuOptions(question, bodyEl, onChange) {
-  bodyEl.innerHTML = '';
+  bodyEl.innerHTML = "";
   const { menuFocus } = getState();
   const answer = getAnswer(question.id);
 
-  if (question.type === 'scene') {
+  if (question.type === "scene") {
     if (question.actionLabel) {
-      const hint = document.createElement('div');
-      hint.className = 'scene-hint';
+      const hint = document.createElement("div");
+      hint.className = "scene-hint";
       hint.textContent = question.actionLabel;
-      hint.dir = 'ltr';
+      hint.dir = "ltr";
       bodyEl.appendChild(hint);
     }
-    return { type: 'scene' };
+    return { type: "scene" };
   }
 
-  if (question.type === 'text') {
-    const textarea = document.createElement('textarea');
-    textarea.className = 'pixel-textarea';
-    textarea.dir = 'rtl';
+  if (question.type === "text") {
+    const textarea = document.createElement("textarea");
+    textarea.className = "pixel-textarea";
+    textarea.dir = "rtl";
     textarea.maxLength = question.maxLength || 300;
-    textarea.placeholder = question.placeholder || '';
-    textarea.value = answer || '';
-    textarea.setAttribute('aria-label', question.text);
+    textarea.placeholder = question.placeholder || "";
+    textarea.value = answer || "";
+    textarea.setAttribute("aria-label", question.text);
 
-    const count = document.createElement('div');
-    count.className = 'char-count';
+    const count = document.createElement("div");
+    count.className = "char-count";
     const updateCount = () => {
       count.textContent = `${textarea.value.length}/${textarea.maxLength || 300}`;
     };
     updateCount();
 
-    textarea.addEventListener('input', () => {
+    textarea.addEventListener("input", () => {
       setAnswer(question.id, textarea.value);
       updateCount();
       onChange?.();
@@ -57,47 +57,48 @@ export function renderMenuOptions(question, bodyEl, onChange) {
 
     bodyEl.appendChild(textarea);
     bodyEl.appendChild(count);
-    return { type: 'text', textarea };
+    return { type: "text", textarea };
   }
 
-  const list = document.createElement('ul');
-  list.className = 'menu-options';
-  list.setAttribute('role', question.type === 'multi' ? 'group' : 'radiogroup');
+  const list = document.createElement("ul");
+  list.className = "menu-options";
+  list.setAttribute("role", question.type === "multi" ? "group" : "radiogroup");
 
   question.options.forEach((opt, idx) => {
-    const li = document.createElement('li');
-    li.className = 'menu-option';
+    const li = document.createElement("li");
+    li.className = "menu-option";
     li.dataset.index = String(idx);
-    li.setAttribute('role', question.type === 'multi' ? 'checkbox' : 'radio');
+    li.setAttribute("role", question.type === "multi" ? "checkbox" : "radio");
     li.tabIndex = -1;
 
     const value = getOptionValue(opt);
     const isFocused = idx === menuFocus;
     const isSelected =
-      question.type === 'multi'
+      question.type === "multi"
         ? Array.isArray(answer) && answer.includes(value)
         : answer === value;
 
-    if (isFocused) li.classList.add('menu-option--focused');
-    if (isSelected) li.classList.add('menu-option--selected');
+    if (isFocused) li.classList.add("menu-option--focused");
+    if (isSelected) li.classList.add("menu-option--selected");
 
-    const cursor = document.createElement('span');
-    cursor.className = 'menu-option__cursor';
-    cursor.textContent = '▶';
+    const cursor = document.createElement("span");
+    cursor.className = "menu-option__cursor";
+    cursor.textContent = "▶";
 
-    const check = document.createElement('span');
-    check.className = 'menu-option__check';
-    check.textContent = question.type === 'multi' ? (isSelected ? '[x]' : '[ ]') : '';
+    const check = document.createElement("span");
+    check.className = "menu-option__check";
+    check.textContent =
+      question.type === "multi" ? (isSelected ? "[x]" : "[ ]") : "";
 
-    const label = document.createElement('span');
-    label.className = 'menu-option__label';
+    const label = document.createElement("span");
+    label.className = "menu-option__label";
     label.textContent = getOptionLabel(opt);
 
-    li.appendChild(question.type === 'multi' ? check : cursor);
-    if (question.type === 'multi') li.appendChild(cursor);
+    li.appendChild(question.type === "multi" ? check : cursor);
+    if (question.type === "multi") li.appendChild(cursor);
     li.appendChild(label);
 
-    li.addEventListener('click', () => {
+    li.addEventListener("click", () => {
       setState({ menuFocus: idx });
       selectOption(question, opt, onChange);
       playMenuClick();
@@ -108,15 +109,18 @@ export function renderMenuOptions(question, bodyEl, onChange) {
   });
 
   bodyEl.appendChild(list);
-  return { type: 'menu', list };
+  return { type: "menu", list };
 }
 
 function selectOption(question, opt, onChange) {
   const value = getOptionValue(opt);
-  if (question.type === 'multi') {
+  if (question.type === "multi") {
     const current = getAnswer(question.id) || [];
     if (current.includes(value)) {
-      setAnswer(question.id, current.filter((o) => o !== value));
+      setAnswer(
+        question.id,
+        current.filter((o) => o !== value),
+      );
       onChange?.();
       return;
     }
@@ -132,21 +136,21 @@ function selectOption(question, opt, onChange) {
 function refreshMenu(list, question) {
   const { menuFocus } = getState();
   const answer = getAnswer(question.id);
-  list.querySelectorAll('.menu-option').forEach((li, idx) => {
+  list.querySelectorAll(".menu-option").forEach((li, idx) => {
     const opt = question.options[idx];
     const value = getOptionValue(opt);
     const isFocused = idx === menuFocus;
     const isSelected =
-      question.type === 'multi'
+      question.type === "multi"
         ? Array.isArray(answer) && answer.includes(value)
         : answer === value;
 
-    li.classList.toggle('menu-option--focused', isFocused);
-    li.classList.toggle('menu-option--selected', isSelected);
+    li.classList.toggle("menu-option--focused", isFocused);
+    li.classList.toggle("menu-option--selected", isSelected);
 
-    const check = li.querySelector('.menu-option__check');
-    if (check && question.type === 'multi') {
-      check.textContent = isSelected ? '[x]' : '[ ]';
+    const check = li.querySelector(".menu-option__check");
+    if (check && question.type === "multi") {
+      check.textContent = isSelected ? "[x]" : "[ ]";
     }
   });
 }
@@ -169,22 +173,22 @@ export function confirmMenuFocus(question, onChange) {
 
 export function bindMenuKeyboard(question, handlers) {
   const handler = (e) => {
-    if (question.type === 'text') return;
+    if (question.type === "text") return;
 
-    if (e.key === 'ArrowDown') {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
       moveMenuFocus(question, 1);
       handlers.onFocusChange?.();
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
       moveMenuFocus(question, -1);
       handlers.onFocusChange?.();
-    } else if (e.key === 'Enter') {
+    } else if (e.key === "Enter") {
       e.preventDefault();
       confirmMenuFocus(question, handlers.onChange);
       handlers.onFocusChange?.();
     }
   };
-  window.addEventListener('keydown', handler);
-  return () => window.removeEventListener('keydown', handler);
+  window.addEventListener("keydown", handler);
+  return () => window.removeEventListener("keydown", handler);
 }
