@@ -33,9 +33,29 @@
           "ar": "أنت الآن داخل عالم… حيث كل قرار يشبه لعبة، وكل تجربة تُحسب كنقطة خبرة 🎮",
           "en": "You are entering a world where every decision feels like a game, and every experience is XP 🎮"
         },
-        "action": "PRESS START"
+        "action": { "ar": "ابدأ", "en": "PRESS START" }
       },
       "goal": "engagement priming / immersion induction"
+    },
+
+    {
+      "id": "participant_name",
+      "type": "open_world_text",
+      "presentation": {
+        "style": "name_entry",
+        "ui": "npc_conversation_box"
+      },
+      "question": {
+        "ar": "تحب تكتب اسمك؟ (اختياري)",
+        "en": "Want to enter your name? (optional)"
+      },
+      "goal": "participant identifier (optional)",
+      "optional": true,
+      "max_length": 80,
+      "placeholder": {
+        "ar": "اكتب اسمك هنا...",
+        "en": "Type your name here..."
+      }
     },
 
     {

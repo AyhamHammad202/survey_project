@@ -2,6 +2,7 @@ import { QUESTIONS, TOTAL_QUESTS } from "./surveySchema.js";
 
 const STORAGE_KEY = "pixel-survey-answers";
 const SOUND_KEY = "pixel-survey-sound";
+const LANG_KEY = 'pixel-survey-lang';
 
 export function loadSoundPreference() {
   const stored = localStorage.getItem(SOUND_KEY);
@@ -18,6 +19,7 @@ export function createInitialState() {
     questIndex: 0,
     answers: {},
     soundOn: loadSoundPreference(),
+    lang: loadLangPreference(),
     menuFocus: 0,
     typewriterDone: false,
     isSubmitting: false,
@@ -65,6 +67,22 @@ export function setAnswer(id, value) {
     answers: { ...state.answers, [id]: value },
     submitError: null,
   });
+}
+
+export function loadLangPreference() {
+  const stored = localStorage.getItem(LANG_KEY);
+  return stored === 'en' ? 'en' : 'ar';
+}
+
+export function saveLangPreference(lang) {
+  localStorage.setItem(LANG_KEY, lang);
+}
+
+export function toggleLang() {
+  const next = getState().lang === 'en' ? 'ar' : 'en';
+  saveLangPreference(next);
+  setState({ lang: next });
+  return next;
 }
 
 export function validateCurrentQuestion() {

@@ -1,4 +1,4 @@
-import { COPY } from "../surveySchema.js";
+import { COPY, QUESTIONS } from "../surveySchema.js";
 import { IS_DEMO_MODE } from "../config.js";
 import {
   getState,
@@ -10,6 +10,7 @@ import {
   goToVictory,
   startQuest,
   resetSurvey,
+  toggleLang,
 } from "../state.js";
 import { submitToSheet } from "../sheets.js";
 import {
@@ -39,37 +40,59 @@ let unbindKeyboard = null;
 let questRenderToken = 0;
 
 export function renderHeader(container) {
-  const header = document.createElement("header");
-  header.className = "game-header";
+  const header = document.createElement('header');
+  header.className = 'game-header';
 
+  const lang = getState().lang || 'ar';
   if (IS_DEMO_MODE) {
-    const banner = document.createElement("div");
-    banner.className = "demo-banner";
-    banner.textContent = COPY.demoBanner;
+    const banner = document.createElement('div');
+    banner.className = 'demo-banner';
+    banner.textContent = COPY.demoBanner[lang] || '';
     header.appendChild(banner);
   } else {
-    const spacer = document.createElement("div");
-    spacer.style.flex = "1";
+    const spacer = document.createElement('div');
+    spacer.style.flex = '1';
     header.appendChild(spacer);
   }
 
-  const soundBtn = document.createElement("button");
-  soundBtn.type = "button";
-  soundBtn.className = "sound-toggle";
-  soundBtn.setAttribute("aria-label", "تبديل الصوت");
+  const soundBtn = document.createElement('button');
+  soundBtn.type = 'button';
+  soundBtn.className = 'sound-toggle';
+  soundBtn.setAttribute('aria-label', 'تبديل الصوت');
   const updateSoundLabel = () => {
     const on = getState().soundOn;
-    soundBtn.textContent = on ? "🔊" : "🔇";
-    soundBtn.classList.toggle("sound-toggle--off", !on);
+    soundBtn.textContent = on ? '🔊' : '🔇';
+    soundBtn.classList.toggle('sound-toggle--off', !on);
   };
   updateSoundLabel();
-  soundBtn.addEventListener("click", () => {
+  soundBtn.addEventListener('click', () => {
     resumeAudioContext();
     const on = toggleSound();
     setState({ soundOn: on });
     updateSoundLabel();
   });
   header.appendChild(soundBtn);
+
+  const langBtn = document.createElement('button');
+  langBtn.type = 'button';
+  langBtn.className = 'lang-toggle';
+  langBtn.setAttribute('aria-label', 'تبديل اللغة');
+  const updateLangLabel = () => {
+    const l = getState().lang || 'ar';
+    langBtn.textContent = l === 'ar' ? 'EN' : 'ع';
+  };
+  updateLangLabel();
+  langBtn.addEventListener('click', () => {
+    const next = toggleLang();
+    setState({ lang: next });
+    updateLangLabel();
+    const content = document.getElementById('game-content');
+    const current = getState().screen;
+    if (current === 'welcome') renderWelcome(content, () => { startQuest(); renderQuest(content, questHandlers(content)); });
+    if (current === 'quest') renderQuest(content, questHandlers(content));
+    if (current === 'victory') renderVictory(content);
+  });
+  header.appendChild(langBtn);
 
   container.appendChild(header);
 }
@@ -88,15 +111,16 @@ export function renderWelcome(app, onStart) {
   title.className = "welcome-title";
   title.textContent = "PIXEL QUEST";
 
-  const tagline = document.createElement("p");
-  tagline.className = "welcome-tagline";
-  tagline.textContent = COPY.welcomeTagline;
+  const tagline = document.createElement('p');
+  tagline.className = 'welcome-tagline';
+  const lang = getState().lang || 'ar';
+  tagline.textContent = COPY.welcomeTagline[lang];
 
-  const press = document.createElement("p");
-  press.className = "welcome-press";
-  press.textContent = COPY.pressStart;
+  const press = document.createElement('p');
+  press.className = 'welcome-press';
+  press.textContent = COPY.pressStart[lang];
 
-  const startBtn = createPixelButton(COPY.startButton, { blink: true });
+  const startBtn = createPixelButton(COPY.startButton[lang], { blink: true });
   onButtonClick(startBtn, () => {
     resumeAudioContext();
     onStart();
@@ -120,6 +144,8 @@ export function renderQuest(app, { onNext, onComplete }) {
   const token = ++questRenderToken;
   const state = getState();
   const question = getCurrentQuestion();
+  const lang = getState().lang || 'ar';
+  const qText = lang === 'en' ? question.textEn || question.text : question.textAr || question.text;
   const hasMenu =
     Array.isArray(question.options) && question.options.length > 0;
 
@@ -147,7 +173,7 @@ export function renderQuest(app, { onNext, onComplete }) {
     });
   };
 
-  runTypewriter(questionEl, question.text, () => {
+  runTypewriter(questionEl, qText, () => {
     if (token !== questRenderToken) return;
     setState({ typewriterDone: true });
     refreshBody();
@@ -175,21 +201,17 @@ export function renderQuest(app, { onNext, onComplete }) {
   actions.className = "actions";
 
   const isLast = isLastQuest();
-  const defaultLabel = isLast ? COPY.confirmButton : COPY.nextButton;
-  const btnLabel =
-    question.type === "scene" && question.actionLabel
-      ? question.actionLabel
-      : defaultLabel;
-  const nextBtn = createPixelButton(btnLabel, {
-    variant: isLast ? "yellow" : "",
-  });
+  const defaultLabel = isLast ? COPY.confirmButton[lang] : COPY.nextButton[lang];
+  const actionLabel = question.type === 'scene' ? (lang === 'en' ? question.actionLabelEn : question.actionLabelAr) : null;
+  const btnLabel = actionLabel || defaultLabel;
+  const nextBtn = createPixelButton(btnLabel, { variant: isLast ? 'yellow' : '' });
 
   const handleNext = async () => {
     resumeAudioContext();
 
     if (!validateCurrentQuestion()) {
       playError();
-      showDialogueError(errorEl, COPY.validationError);
+      showDialogueError(errorEl, COPY.validationError[lang] || COPY.validationError.ar);
       shakeDialogue(box);
       setState({ shake: true });
       return;
@@ -199,22 +221,25 @@ export function renderQuest(app, { onNext, onComplete }) {
     playConfirm();
 
     if (isLast) {
-      nextBtn.disabled = true;
-      nextBtn.textContent = COPY.saving;
-      setState({ isSubmitting: true });
-      try {
-        await submitToSheet();
-        onComplete();
-      } catch (err) {
-        setState({ submitError: err.message, isSubmitting: false });
-        nextBtn.disabled = false;
-        nextBtn.textContent = btnLabel;
-        const errBox = document.createElement("div");
-        errBox.className = "submit-error";
-        errBox.textContent = `${err.message} — حاول مجدداً`;
-        actions.insertBefore(errBox, nextBtn);
-        playError();
-      }
+      // Show review screen before submitting
+      renderReview(app, async () => {
+        nextBtn.disabled = true;
+        nextBtn.textContent = COPY.saving[lang] || COPY.saving.ar;
+        setState({ isSubmitting: true });
+        try {
+          await submitToSheet();
+          onComplete();
+        } catch (err) {
+          setState({ submitError: err.message, isSubmitting: false });
+          nextBtn.disabled = false;
+          nextBtn.textContent = btnLabel;
+          const errBox = document.createElement('div');
+          errBox.className = 'submit-error';
+          errBox.textContent = `${err.message} — ${lang === 'ar' ? 'حاول مجدداً' : 'try again'}`;
+          actions.insertBefore(errBox, nextBtn);
+          playError();
+        }
+      });
       return;
     }
 
@@ -226,7 +251,7 @@ export function renderQuest(app, { onNext, onComplete }) {
   const skipTypewriter = () => {
     if (!getState().typewriterDone) {
       cancelTypewriter();
-      questionEl.textContent = question.text;
+      questionEl.textContent = qText;
       setState({ typewriterDone: true });
       refreshBody();
     }
@@ -236,6 +261,115 @@ export function renderQuest(app, { onNext, onComplete }) {
   questionEl.addEventListener("click", skipTypewriter);
 
   actions.appendChild(nextBtn);
+  screen.appendChild(actions);
+
+  transitionScreen(app, () => app.appendChild(screen));
+}
+
+export function renderReview(app, onConfirm) {
+  const lang = getState().lang || 'ar';
+  const screen = document.createElement('div');
+  screen.className = 'screen review-screen';
+
+  const title = document.createElement('h2');
+  title.className = 'review-title';
+  title.textContent = lang === 'ar' ? 'راجع إجاباتك' : 'Review your answers';
+  screen.appendChild(title);
+
+  const list = document.createElement('div');
+  list.className = 'review-list';
+
+  const state = getState();
+  const answers = state.answers || {};
+
+  QUESTIONS.forEach((q) => {
+    const row = document.createElement('div');
+    row.className = 'review-row';
+    const qLabel = lang === 'en' ? q.textEn || '' : q.textAr || '';
+    const qEl = document.createElement('div');
+    qEl.className = 'review-q';
+    qEl.textContent = qLabel;
+
+    const aEl = document.createElement('div');
+    aEl.className = 'review-a';
+    const val = answers[q.id];
+    if (val == null || (Array.isArray(val) && val.length === 0) || val === '') {
+      aEl.textContent = lang === 'ar' ? '— لم يجب' : '— no answer';
+    } else if (q.type === 'text') {
+      aEl.textContent = String(val);
+    } else if (q.type === 'multi') {
+      const labels = (val || []).map((v) => {
+        const opt = q.options.find((o) => o.value === v) || {};
+        return lang === 'en' ? opt.labelEn || v : opt.labelAr || v;
+      });
+      aEl.textContent = labels.join(' ، ');
+    } else {
+      const opt = (q.options || []).find((o) => o.value === val) || {};
+      aEl.textContent = lang === 'en' ? opt.labelEn || String(val) : opt.labelAr || String(val);
+    }
+
+    row.appendChild(qEl);
+    row.appendChild(aEl);
+    list.appendChild(row);
+  });
+
+  screen.appendChild(list);
+
+  // Rating
+  const ratingWrap = document.createElement('div');
+  ratingWrap.className = 'review-rating';
+  const ratingLabel = document.createElement('div');
+  ratingLabel.className = 'rating-label';
+  ratingLabel.textContent = lang === 'ar' ? 'قيّم الاستبيان' : 'Rate this survey';
+  ratingWrap.appendChild(ratingLabel);
+
+  const stars = document.createElement('div');
+  stars.className = 'rating-stars';
+  const current = state.answers?.survey_rating || 0;
+  for (let i = 1; i <= 5; i += 1) {
+    const s = document.createElement('button');
+    s.type = 'button';
+    s.className = 'star' + (i <= current ? ' on' : '');
+    s.textContent = '★';
+    s.addEventListener('click', () => {
+      setState({ answers: { ...getState().answers, survey_rating: i } });
+      // re-render review to update stars
+      renderReview(app, onConfirm);
+    });
+    stars.appendChild(s);
+  }
+  ratingWrap.appendChild(stars);
+  screen.appendChild(ratingWrap);
+
+  // Share button
+  const shareBtn = createPixelButton(lang === 'ar' ? 'مشاركة' : 'Share', { variant: 'blue' });
+  onButtonClick(shareBtn, async () => {
+    const shareData = { title: lang === 'ar' ? 'نتيجتي في الاستبيان' : 'My survey result', text: window.location.href, url: window.location.href };
+    if (navigator.share) {
+      try { await navigator.share(shareData); } catch {}
+    } else {
+      await navigator.clipboard.writeText(`${shareData.title} - ${shareData.url}`);
+      alert(lang === 'ar' ? 'تم نسخ رابط المشاركة' : 'Share link copied');
+    }
+  });
+  screen.appendChild(shareBtn);
+
+  const actions = document.createElement('div');
+  actions.className = 'review-actions';
+  const editBtn = createPixelButton(lang === 'ar' ? 'تعديل' : 'Edit');
+  onButtonClick(editBtn, () => {
+    // go back to first question for editing
+    setState({ screen: 'quest', questIndex: 0 });
+    renderQuest(app, questHandlers(app));
+  });
+
+  const confirmBtn = createPixelButton(COPY.confirmButton[getState().lang || 'ar'] || (lang === 'ar' ? 'تأكيد' : 'Confirm'), { variant: 'yellow' });
+  onButtonClick(confirmBtn, () => {
+    onConfirm();
+  });
+
+  actions.appendChild(editBtn);
+  actions.appendChild(confirmBtn);
   screen.appendChild(actions);
 
   transitionScreen(app, () => app.appendChild(screen));
@@ -252,17 +386,16 @@ export function renderVictory(app) {
   const screen = document.createElement("div");
   screen.className = "screen victory-screen";
 
-  const banner = document.createElement("h1");
-  banner.className = "victory-banner";
-  banner.textContent = COPY.victoryBanner;
+  const lang = getState().lang || 'ar';
+  const banner = document.createElement('h1');
+  banner.className = 'victory-banner';
+  banner.textContent = COPY.victoryBanner[lang] || '';
 
-  const text = document.createElement("p");
-  text.className = "victory-text";
-  text.textContent = COPY.victory;
+  const text = document.createElement('p');
+  text.className = 'victory-text';
+  text.textContent = COPY.victory[lang] || '';
 
-  const continueBtn = createPixelButton(COPY.continueButton, {
-    variant: "blue",
-  });
+  const continueBtn = createPixelButton(COPY.continueButton[lang] || '', { variant: 'blue' });
   onButtonClick(continueBtn, () => {
     resetSurvey();
     renderWelcome(app, () => {

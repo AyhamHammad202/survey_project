@@ -13,6 +13,14 @@ export function buildPayload() {
       row[q.id] = val ?? '';
     }
   });
+  // include any additional answers (e.g., survey_rating or free-form keys)
+  Object.keys(answers || {}).forEach((k) => {
+    if (row[k] === undefined) {
+      const v = answers[k];
+      if (Array.isArray(v)) row[k] = v.join(' | ');
+      else row[k] = v ?? '';
+    }
+  });
   return row;
 }
 
