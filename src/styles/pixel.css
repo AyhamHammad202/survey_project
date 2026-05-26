@@ -385,11 +385,28 @@
   background: var(--panel-inner);
   border: var(--border-chunk) solid var(--frame-outer);
 }
-.review-q { font-weight: 700; }
-.review-a { text-align: right; color: var(--ui-dim); }
-.rating-stars { display:flex; gap:6px; margin-top:8px; }
-.rating-stars .star { background:transparent; border:0; font-size:20px; color:#666; cursor:pointer; }
-.rating-stars .star.on { color: var(--accent-yellow); }
+.review-q {
+  font-weight: 700;
+}
+.review-a {
+  text-align: right;
+  color: var(--ui-dim);
+}
+.rating-stars {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.rating-stars .star {
+  background: transparent;
+  border: 0;
+  font-size: 20px;
+  color: #666;
+  cursor: pointer;
+}
+.rating-stars .star.on {
+  color: var(--accent-yellow);
+}
 
 .menu-option--selected .menu-option__check {
   color: var(--accent-green);

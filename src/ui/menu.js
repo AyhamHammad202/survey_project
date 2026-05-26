@@ -4,9 +4,10 @@ import { getState, setAnswer, getAnswer, setState } from "../state.js";
 function getOptionLabel(option) {
   if (typeof option === "string") return option;
   if (option && typeof option === "object") {
-     const lang = getState().lang || 'ar';
-     if (lang === 'en') return option.labelEn || option.label || option.value || '';
-     return option.labelAr || option.label || option.value || '';
+    const lang = getState().lang || "ar";
+    if (lang === "en")
+      return option.labelEn || option.label || option.value || "";
+    return option.labelAr || option.label || option.value || "";
   }
   return String(option ?? "");
 }
@@ -14,7 +15,7 @@ function getOptionLabel(option) {
 function getOptionValue(option) {
   if (typeof option === "string") return option;
   if (option && typeof option === "object") {
-     return option.value ?? option.label ?? '';
+    return option.value ?? option.label ?? "";
   }
   return String(option ?? "");
 }
@@ -40,10 +41,16 @@ export function renderMenuOptions(question, bodyEl, onChange) {
     textarea.className = "pixel-textarea";
     textarea.dir = "rtl";
     textarea.maxLength = question.maxLength || 300;
-    const lang = getState().lang || 'ar';
-    textarea.placeholder = lang === 'en' ? (question.placeholderEn || '') : (question.placeholderAr || '');
-    textarea.value = answer || '';
-    textarea.setAttribute('aria-label', lang === 'en' ? (question.textEn || '') : (question.textAr || ''));
+    const lang = getState().lang || "ar";
+    textarea.placeholder =
+      lang === "en"
+        ? question.placeholderEn || ""
+        : question.placeholderAr || "";
+    textarea.value = answer || "";
+    textarea.setAttribute(
+      "aria-label",
+      lang === "en" ? question.textEn || "" : question.textAr || "",
+    );
 
     const count = document.createElement("div");
     count.className = "char-count";
