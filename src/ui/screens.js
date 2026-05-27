@@ -108,6 +108,21 @@ export function renderWelcome(app, onStart) {
   }
   cancelTypewriter();
 
+  // Check for previous submission
+  const STORAGE_KEY = "pixel-survey-answers"; // same as in state.js
+  const backup = localStorage.getItem(STORAGE_KEY);
+  let hasBackup = false;
+  let backupTimestamp = null;
+  if (backup) {
+    try {
+      const parsed = JSON.parse(backup);
+      hasBackup = true;
+      backupTimestamp = parsed.timestamp;
+    } catch (e) {
+      console.warn("Failed to parse survey backup", e);
+    }
+  }
+
   const screen = document.createElement("div");
   screen.className = "screen welcome-screen";
 
@@ -124,9 +139,33 @@ export function renderWelcome(app, onStart) {
   press.className = "welcome-press";
   press.textContent = COPY.pressStart[lang];
 
-  const startBtn = createPixelButton(COPY.startButton[lang], { blink: true });
+  // If there is a backup, show a message
+  if (hasBackup) {
+    const message = document.createElement("p");
+    message.className = "welcome-backup-message";
+    const dateOptions = { year: "numeric", month: "short", day: "numeric" };
+    const date = new Date(backupTimestamp).toLocaleDateString(
+      lang,
+      dateOptions,
+    );
+    message.textContent =
+      lang === "ar"
+        ? `لقد أكملت الاستبيان سابقًا في ${date}.`
+        : `You previously completed the survey on ${date}.`;
+    screen.appendChild(message);
+  }
+
+  const startBtnText = hasBackup
+    ? lang === "ar"
+      ? "إعادة التحدي 🚀"
+      : "Retake Challenge 🚀"
+    : COPY.startButton[lang];
+  const startBtn = createPixelButton(startBtnText, { blink: true });
   onButtonClick(startBtn, () => {
     resumeAudioContext();
+    if (hasBackup) {
+      resetSurvey();
+    }
     onStart();
   });
 
@@ -335,6 +374,10 @@ export function renderReview(app, onConfirm) {
 
   screen.appendChild(list);
 
+  // // Rating
+  // const ratingWrap = document.createElement("div");
+  // ratingWrap.className = "review-rating";
+  // const ratingLabel = document.createElement("div");
   // Rating
   const ratingWrap = document.createElement("div");
   ratingWrap.className = "review-rating";
@@ -360,9 +403,11 @@ export function renderReview(app, onConfirm) {
     stars.appendChild(s);
   }
   ratingWrap.appendChild(stars);
-  screen.appendChild(ratingWrap);
 
-  // Share button
+  // Share section
+  const shareSection = document.createElement("div");
+  shareSection.className = "review-share-section";
+  shareSection.style.marginTop = "20px";
   const shareBtn = createPixelButton(lang === "ar" ? "مشاركة" : "Share", {
     variant: "blue",
   });
@@ -383,29 +428,40 @@ export function renderReview(app, onConfirm) {
       alert(lang === "ar" ? "تم نسخ رابط المشاركة" : "Share link copied");
     }
   });
-  screen.appendChild(shareBtn);
+  shareSection.appendChild(shareBtn);
 
   const actions = document.createElement("div");
   actions.className = "review-actions";
-  const editBtn = createPixelButton(lang === "ar" ? "تعديل" : "Edit");
+  actions.style.display = "flex";
+  actions.style.gap = "12px";
+  actions.style.justifyContent = "center";
+  actions.style.flexWrap = "wrap";
+  const confirmBtn = createPixelButton(
+    COPY.confirmButton[getState().lang || "ar"] ||
+      (lang === "ar" ? "تأكيد" : "Confirm"),
+    { variant: "green" },
+  );
+  onButtonClick(confirmBtn, () => {
+    onConfirm();
+  });
+
+  const editBtn = createPixelButton(lang === "ar" ? "تعديل" : "Edit", {
+    variant: "blue",
+  });
   onButtonClick(editBtn, () => {
     // go back to first question for editing
     setState({ screen: "quest", questIndex: 0 });
     renderQuest(app, questHandlers(app));
   });
 
-  const confirmBtn = createPixelButton(
-    COPY.confirmButton[getState().lang || "ar"] ||
-      (lang === "ar" ? "تأكيد" : "Confirm"),
-    { variant: "yellow" },
-  );
-  onButtonClick(confirmBtn, () => {
-    onConfirm();
-  });
-
-  actions.appendChild(editBtn);
   actions.appendChild(confirmBtn);
+  actions.appendChild(editBtn);
+
   screen.appendChild(actions);
+  screen.appendChild(shareSection);
+  screen.appendChild(ratingWrap);
+  screen.appendChild(shareSection);
+  screen.appendChild(ratingWrap);
 
   transitionScreen(app, () => app.appendChild(screen));
 }
