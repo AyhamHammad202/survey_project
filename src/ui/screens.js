@@ -441,8 +441,20 @@ export function renderReview(app, onConfirm) {
       (lang === "ar" ? "تأكيد" : "Confirm"),
     { variant: "green" },
   );
+  let confirmClicked = false;
   onButtonClick(confirmBtn, () => {
-    onConfirm();
+    if (confirmClicked) return;
+    confirmClicked = true;
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = COPY.saving?.[lang] || (lang === "ar" ? "جارٍ الحفظ…" : "Saving…");
+    onConfirm().catch(() => {
+      // onConfirm handles its own error UI; re-enable on failure
+      confirmClicked = false;
+      confirmBtn.disabled = false;
+      confirmBtn.textContent =
+        COPY.confirmButton[getState().lang || "ar"] ||
+        (lang === "ar" ? "تأكيد" : "Confirm");
+    });
   });
 
   const editBtn = createPixelButton(lang === "ar" ? "تعديل" : "Edit", {
